@@ -4,6 +4,17 @@ import curses
 import os
 x = 0
 
+# # Gotta be root to get stuff done. (uncomment when ready for implementation)
+# if os.geteuid() != 0:
+#      print "You need to have root privileges to use this script."
+#      exit("Please try again, this time using 'sudo'. Exiting.")
+
+
+# The basic order of things should be::
+# 1. Partition, offer cfdisk/carry on.
+# 2.
+
+
 # an input string handling function
 def get_param(prompt_string):
      screen.clear()
