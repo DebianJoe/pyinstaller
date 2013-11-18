@@ -4,7 +4,7 @@ import curses
 import os
 
 
-# Gotta be root to get stuff done. (uncomment when ready for implementation)
+# Gotta be root to get stuff done.  Testing as root because
 # most of the execute calls need root anyhow (fdisk, parted, etc.)
 if os.geteuid() != 0:
      print "You need to have root privileges to use this script."
@@ -79,8 +79,8 @@ def choose_filesystem(partition):
           screen.addstr(1, 0, partition)
           screen.addstr(2, 2, "Please enter a number...")
           screen.addstr(4, 4, "1 - ext2")
-          screen.addstr(5, 4, "2 - ext2")
-          screen.addstr(6, 4, "3 - ext3")
+          screen.addstr(5, 4, "2 - ext3")
+          screen.addstr(6, 4, "3 - ext4")
           screen.addstr(7, 4, "4 - btrfs")
           screen.refresh()
           x = screen.getch()
@@ -133,8 +133,53 @@ def boot_setup():
                curses.endwin()
      curses.endwin()
 
+def main_setup():
+     global FS_TYPE_OS, INSTALL_DEV
+     x = 0 # x is our choice
+     while x != ord('4'):
+          screen.clear()
+          screen.border(0)
+          screen.addstr(0, 0, "Setup /root partition")
+          screen.addstr(2, 2, "Please enter a number...")
+          screen.addstr(4, 4, "1 - Specify a /root partition")
+          screen.addstr(5, 4, "2 - Use fdisk -l to list partitions")
+          screen.addstr(6, 4, "3 - Use 'blkid -o list' to check partitions.")
+          screen.addstr(7, 4, "4 - Done")
+          screen.refresh()
+          if INSTALL_DEV != None:
+               screen.addstr(8, 6, ("/ location at %s" % INSTALL_DEV))
+          if FS_TYPE_OS != None:
+               screen.addstr(9, 6, ("will be formatted to %s" % FS_TYPE_OS))
+          screen.refresh()
+
+          x = screen.getch()
+
+          if x == ord('1'):
+               # required section.
+               INSTALL_DEV = get_param("Enter Partition name for /root", None)
+               FS_TYPE_OS = choose_filesystem(" / ")
+               curses.endwin()
+          if x == ord('2'):
+               screen.clear()
+               curses.endwin()
+               execute_cmd("fdisk -l")
+               curses.endwin()
+          if x == ord('3'):
+               curses.endwin()
+               execute_cmd("blkid -o list")
+               curses.endwin()
+     curses.endwin()
+
 if __name__ == "__main__":
      # flow control for each function #
      opening()
      boot_setup()
+     main_setup()
      curses.endwin()
+
+     # This added for debug purposes.
+     print "Just as a test\n\n"
+     print "/boot located at %s" % BOOT_DEV
+     print "\tformatted as %s" % FS_TYPE_BOOT
+     print "/ located at %s" % INSTALL_DEV
+     print "\tformatted as %s" % FS_TYPE_OS
