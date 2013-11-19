@@ -27,6 +27,11 @@ FS_TYPE_OS = None   # What Filesystem Type is main install?
 # 3. Get location for main install. Give fdisk -l AND blkid as options.
 # 4. Get drive for grub (or carry on)
 
+
+
+######## User Interface Functions ###############
+
+
 # an input string handling function
 def get_param(prompt_string, extra):
      screen.clear()
@@ -192,6 +197,28 @@ def grub_setup():
                                     "Usually a drive, like /dev/sda")
                curses.endwin()
      curses.endwin()
+
+###### Non-user seen functions #########
+
+def do_run_in_chroot(command):
+     #because we need to be able to call it as a function
+     os.system("chroot /target/ /bin/sh -c \"%s\"" % command
+
+def do_mount(self, device, dest, type, options=None):
+''' Mount a filesystem '''
+     p = None
+     if(options is not None):
+          cmd = "mount -o %s -t %s %s %s" % (options, type, device, dest)
+     else:
+          cmd = "mount -t %s %s %s" % (type, device, dest)
+          print "EXECUTING: '%s'" % cmd
+          p = Popen(cmd ,shell=True)
+          p.wait()
+          return p.returncode
+
+###################################################
+
+####### Main Program ##############################
 
 if __name__ == "__main__":
      # flow control for each function #
