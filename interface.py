@@ -27,7 +27,6 @@ FS_TYPE_OS = None   # What Filesystem Type is main install?
 # 3. Get location for main install. Give fdisk -l AND blkid as options.
 # 4. Get drive for grub (or carry on)
 
-
 # an input string handling function
 def get_param(prompt_string, extra):
      screen.clear()
@@ -78,10 +77,10 @@ def choose_filesystem(partition):
           screen.addstr(0, 0, "Choose Filesytem for")
           screen.addstr(1, 0, partition)
           screen.addstr(2, 2, "Please enter a number...")
-          screen.addstr(4, 4, "1 - ext2")
-          screen.addstr(5, 4, "2 - ext3")
-          screen.addstr(6, 4, "3 - ext4")
-          screen.addstr(7, 4, "4 - btrfs")
+          screen.addstr(4, 4, "1 - btrfs")
+          screen.addstr(5, 4, "2 - ext2")
+          screen.addstr(6, 4, "3 - ext3")
+          screen.addstr(7, 4, "4 - ext4")
           screen.refresh()
           x = screen.getch()
           curses.endwin()
@@ -170,11 +169,36 @@ def main_setup():
                curses.endwin()
      curses.endwin()
 
+def grub_setup():
+     global GRUB_DEV
+     x = 0 # x is our choice
+     while x != ord('2'):
+          screen.clear()
+          screen.border(0)
+          screen.addstr(0, 0, "Grub Setup")
+          screen.addstr(2, 2, "Please enter a number...")
+          screen.addstr(4, 4, "1 - Specify a device for GRUB")
+          screen.addstr(5, 4, "2 - Done")
+          screen.refresh()
+          if GRUB_DEV != None:
+               screen.addstr(7, 6, ("GRUB location at %s" % GRUB_DEV))
+          screen.refresh()
+
+          x = screen.getch()
+
+          if x == ord('1'):
+               # IF grub is needed
+               GRUB_DEV = get_param("Enter device name for GRUB", \
+                                    "Usually a drive, like /dev/sda")
+               curses.endwin()
+     curses.endwin()
+
 if __name__ == "__main__":
      # flow control for each function #
      opening()
      boot_setup()
      main_setup()
+     grub_setup()
      curses.endwin()
 
      # This added for debug purposes.
@@ -183,3 +207,4 @@ if __name__ == "__main__":
      print "\tformatted as %s" % FS_TYPE_BOOT
      print "/ located at %s" % INSTALL_DEV
      print "\tformatted as %s" % FS_TYPE_OS
+     print "Grub located at %s" % GRUB_DEV
