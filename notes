@@ -1,0 +1,7 @@
+I'm not sure at this point if it would be faster to port the gtk-based engine to the curses project, or write from the ground up.
+
+The current installer engine is proven to work well, but is majorly nested in the gtk_front_end.
+
+By attempting to write functions for the lower-level installer from scratch, we can offer a more stream-lined experience.  The downside is that it will take significnat writing and debug time.
+
+-joe
