@@ -20,7 +20,7 @@ BOOT_DEV = None     # Where is the physical location of Boot?
 FS_TYPE_BOOT = None # What Filesystem Type for Boot?
 INSTALL_DEV = None  # Where is the main install going?
 FS_TYPE_OS = None   # What Filesystem Type is main install?
-NEW_HOSTNAME = None # The name that the user would like.
+NEW_HOSTNAME = "bbq"# The name that the user would like.
 
 # The basic order of things should be::
 # 1. Partition, offer cfdisk (or carry on)
@@ -187,9 +187,11 @@ def grub_setup():
           screen.addstr(2, 2, "Please enter a number...")
           screen.addstr(4, 4, "1 - Specify a device for GRUB")
           screen.addstr(5, 4, "2 - Done")
+          screen.addstr(7, 2, \
+                    "Leave blank if you don't wish to install a bootloader.")
           screen.refresh()
           if GRUB_DEV != None:
-               screen.addstr(7, 6, ("GRUB location at %s" % GRUB_DEV))
+               screen.addstr(9, 6, ("GRUB location at %s" % GRUB_DEV))
           screen.refresh()
 
           x = screen.getch()
@@ -231,17 +233,23 @@ def summary():
           if BOOT_DEV != None:
                screen.addstr(2, 2, ("/boot located at %s" % BOOT_DEV))
                screen.addstr(3, 3, ("and formatted as %s" % FS_TYPE_BOOT))
+          elif BOOT_DEV == None:
+               screen.addstr(2, 2, "no /boot partition selected")
           screen.addstr(4, 2, ("/ located at %s" % INSTALL_DEV))
           screen.addstr(5, 3, ("and formatted as %s" % FS_TYPE_OS))
           if GRUB_DEV != None:
                screen.addstr(6, 2, ("GRUB to be installed to %s" % GRUB_DEV))
+          elif GRUB_DEV == None:
+               screen.addstr(6, 2, "a bootloaded will not be installed")
           if NEW_HOSTNAME != None:
                screen.addstr(7, 2, ("Hostname will be %s" % NEW_HOSTNAME))
           screen.addstr(9, 4, "Press '2' to commit changes to drive.")
+          screen.addstr(10, 4, "or press 0 to exit installer.")
           screen.refresh()
           x = screen.getch()
+          if x == ord('0'):
+               exit_cleanly("User has cancelled install at summary")
      curses.endwin()
-
 
 ###### Non-user seen functions #########
 
@@ -250,11 +258,16 @@ def do_run_in_chroot(command):
      os.system("chroot /target/ /bin/sh -c \"%s\"" % command)
 
 def do_mount(device, dest):
+     #needs options to be passed, will require some examination#
      p = None
      if(options is not None):
           cmd = "mount -o %s -t %s %s %s" % (options, type, device, dest)
 
-
+def exit_cleanly(reason):
+     curses.endwin()
+     print "\033[2J\033[1;H"
+     print "%s\n" % reason
+     exit(1)
 ###################################################
 
 ####### Main Program ##############################
