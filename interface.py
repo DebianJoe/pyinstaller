@@ -34,31 +34,6 @@ NEW_HOSTNAME = "bbq"# The name that the user would like.
 
 ######## User Interface Functions ###############
 
-
-# an input string handling function
-def get_param(prompt_string, extra):
-     screen.clear()
-     screen.border(1)
-     screen.addstr(2, 2, prompt_string)
-     if extra != None:
-          screen.addstr(3, 3, extra)
-     screen.refresh()
-     input = screen.getstr(10, 10, 60)
-     return input
-
-# function for clean calls to os.system
-def execute_cmd(cmd_string):
-     os.system("clear")
-     a = os.system(cmd_string)
-     print ""
-     if a == 0:
-          print "Command executed correctly"
-     else:
-          curses.endwin()
-          print "Command terminated with error"
-     raw_input("Press enter")
-     print ""
-
 # Starting loop.
 def opening():
      x = 0 # x is our choice for step #
@@ -120,6 +95,7 @@ def boot_setup():
                screen.addstr(8, 6, ("/boot location at %s" % BOOT_DEV))
           if FS_TYPE_BOOT != None:
                screen.addstr(9, 6, ("will be formatted to %s" % FS_TYPE_BOOT))
+               screen.addstr(10, 6, "press 4 if you're happy with that")
           screen.refresh()
 
           x = screen.getch()
@@ -157,6 +133,7 @@ def main_setup():
                screen.addstr(9, 6, ("/ location at %s" % INSTALL_DEV))
           if FS_TYPE_OS != None:
                screen.addstr(10, 6, ("will be formatted to %s" % FS_TYPE_OS))
+               screen.addstr(11, 6, "press 4 if you're happy with that.")
           screen.refresh()
 
           x = screen.getch()
@@ -257,17 +234,47 @@ def do_run_in_chroot(command):
      #because we need to be able to call it as a function
      os.system("chroot /target/ /bin/sh -c \"%s\"" % command)
 
-def do_mount(device, dest):
-     #needs options to be passed, will require some examination#
+def do_mount(options, fstype, device, dest):
+     # needs options to be passed, will require some examination  #
+     # the 'fstype' is the filesystem type, device is what to mount #
+     # and 'dest is where the device is to be mounted.            #
      p = None
      if(options is not None):
-          cmd = "mount -o %s -t %s %s %s" % (options, type, device, dest)
+          cmd = "mount -o %s -t %s %s %s" % \
+                (options, fstype, device, dest)
 
 def exit_cleanly(reason):
      curses.endwin()
      print "\033[2J\033[1;H"
      print "%s\n" % reason
      exit(1)
+
+
+
+# an input string handling function
+def get_param(prompt_string, extra):
+     screen.clear()
+     screen.border(1)
+     screen.addstr(2, 2, prompt_string)
+     if extra != None:
+          screen.addstr(3, 3, extra)
+     screen.refresh()
+     input = screen.getstr(10, 10, 60)
+     return input
+
+# function for clean calls to os.system
+def execute_cmd(cmd_string):
+     os.system("clear")
+     a = os.system(cmd_string)
+     print ""
+     if a == 0:
+          print "Command executed correctly"
+     else:
+          curses.endwin()
+          print "Command terminated with error"
+     raw_input("Press enter")
+     print ""
+
 ###################################################
 
 ####### Main Program ##############################
