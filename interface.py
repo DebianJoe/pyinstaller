@@ -22,15 +22,6 @@ INSTALL_DEV = None  # Where is the main install going?
 FS_TYPE_OS = None   # What Filesystem Type is main install?
 NEW_HOSTNAME = "bbq"# The name that the user would like.
 
-# The basic order of things should be::
-# 1. Partition, offer cfdisk (or carry on)
-# 2. See if user wants to use /boot.  Give fdisk -l AND blkid as options
-# 3. Get location for main install. Give fdisk -l AND blkid as options.
-# 4. Get drive for grub (or carry on)
-# 5. Prompt User for new hostname
-# 6. Provide Summary before committing changes to disk.
-
-
 
 ######## User Interface Functions ###############
 
@@ -240,6 +231,8 @@ def do_mount(options, fstype, device, dest):
      if(options is not None):
           cmd = "mount -o %s -t %s %s %s" % \
                 (options, fstype, device, dest)
+     else:
+          cmd = ("mount -t %s %s" % device, dest)
 
 def do_Umount(options, fstype, device, dest):
      if(options is not None):
@@ -290,7 +283,7 @@ def installer_engine():
      GRUB_DEV, NEW_HOSTNAME
      os.system("mkdir /target")
      create_fs(FS_TYPE_OS, INSTALL_DEV)
-     # mount INSTALL_DEV on /target
+     do_mount (None, None, INSTALL_DEV, "/target")
 
 ###################################################
 
