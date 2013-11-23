@@ -235,21 +235,29 @@ def do_run_in_chroot(command):
      os.system("chroot /target/ /bin/sh -c \"%s\"" % command)
 
 def do_mount(options, fstype, device, dest):
-     # needs options to be passed, will require some examination  #
      # the 'fstype' is the filesystem type, device is what to mount #
      # and 'dest is where the device is to be mounted.            #
-     p = None
      if(options is not None):
           cmd = "mount -o %s -t %s %s %s" % \
                 (options, fstype, device, dest)
+
+def do_Umount(options, fstype, device, dest):
+     if(options is not None):
+          cmd = "mount -o %s -t %s %s %s" % \
+                (options, fstype, device, dest)
+
+def create_fs(filesystem, device):
+     if(filesystem is not None):
+          cmd = "mke2fs -t %s %s" % \
+                (filesystem, device)
+          tune = "tune2fs -r 1000 %s" % device
+          os.system(cmd)
 
 def exit_cleanly(reason):
      curses.endwin()
      print "\033[2J\033[1;H"
      print "%s\n" % reason
      exit(1)
-
-
 
 # an input string handling function
 def get_param(prompt_string, extra):
@@ -263,6 +271,7 @@ def get_param(prompt_string, extra):
      return input
 
 # function for clean calls to os.system
+# designed to PAUSE, so NOT for linear calls
 def execute_cmd(cmd_string):
      os.system("clear")
      a = os.system(cmd_string)
@@ -275,7 +284,13 @@ def execute_cmd(cmd_string):
      raw_input("Press enter")
      print ""
 
-# def umount TBD
+def installer_engine():
+     # The Sequencer for the install process.
+     global NEW_HOSTNAME, BOOT_DEV, FS_TYPE_BOOT, INSTALL_DEV, FS_TYPE_OS, \
+     GRUB_DEV, NEW_HOSTNAME
+     os.system("mkdir /target")
+     create_fs(FS_TYPE_OS, INSTALL_DEV)
+     # mount INSTALL_DEV on /target
 
 ###################################################
 
