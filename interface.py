@@ -233,11 +233,15 @@ def do_mount(options, fstype, device, dest):
                 (options, fstype, device, dest)
      else:
           cmd = ("mount -t %s %s" % device, dest)
+     os.system(cmd)
 
 def do_Umount(options, fstype, device, dest):
      if(options is not None):
           cmd = "mount -o %s -t %s %s %s" % \
                 (options, fstype, device, dest)
+     else:
+          cmd = ("umount -t %s %s" % device, dest)
+     os.system(cmd)
 
 def create_fs(filesystem, device):
      if(filesystem is not None):
