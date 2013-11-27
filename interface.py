@@ -94,6 +94,7 @@ def boot_setup():
           if x == ord('1'):
                # do we even want a special boot device?
                BOOT_DEV = get_param("Enter Partition name for /boot", None)
+               check_device(BOOT_DEV, "Boot device does not exist")
                FS_TYPE_BOOT = choose_filesystem("boot")
                curses.endwin()
           if x == ord('2'):
@@ -132,6 +133,7 @@ def main_setup():
           if x == ord('1'):
                # required section.
                INSTALL_DEV = get_param("Enter Partition name for /root", None)
+               check_device(INSTALL_DEV, "Root partition does not exist")
                FS_TYPE_OS = choose_filesystem(" / ")
                curses.endwin()
           if x == ord('2'):
@@ -168,6 +170,7 @@ def grub_setup():
                # IF grub is needed
                GRUB_DEV = get_param("Enter device name for GRUB", \
                                     "Usually a drive, like /dev/sda")
+               check_device(GRUB_DEV, "Grub Device does not exist")
                curses.endwin()
      curses.endwin()
 
@@ -250,6 +253,14 @@ def create_fs(filesystem, device):
           tune = "tune2fs -r 1000 %s" % device
           os.system(cmd)
 
+# bails out if you ask for something stupid
+def check_device(device, bail):
+     if os.path.exists(device):
+          pass
+     else:
+          exit_cleanly(bail)
+
+
 def exit_cleanly(reason):
      curses.endwin()
      print "\033[2J\033[1;H"
@@ -268,7 +279,7 @@ def get_param(prompt_string, extra):
      return input
 
 # function for clean calls to os.system
-# designed to PAUSE, so NOT for linear calls
+# designed to PAUSE, so NOT for non-linear calls
 def execute_cmd(cmd_string):
      os.system("clear")
      a = os.system(cmd_string)
