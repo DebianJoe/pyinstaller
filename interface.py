@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+# todo: don't just kill installer if user makes typos
+# todo: unmount all possible /target dirs in engine.
+# todo: shelve a file once engine starts that holds state,
+# just in case of errors during install, to avoid partial installs
+
 import curses
 import os
 import subprocess
