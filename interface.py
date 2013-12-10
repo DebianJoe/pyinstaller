@@ -56,7 +56,6 @@ def choose_filesystem(partition):
           screen.addstr(0, 0, "Choose Filesytem for")
           screen.addstr(1, 0, partition)
           screen.addstr(2, 2, "Please enter a number...")
-          screen.addstr(4, 4, "1 - btrfs")
           screen.addstr(5, 4, "2 - ext2")
           screen.addstr(6, 4, "3 - ext3")
           screen.addstr(7, 4, "4 - ext4")
@@ -65,7 +64,7 @@ def choose_filesystem(partition):
           curses.endwin()
 
           if x == ord('1'):
-               return "btrfs"
+               pass
           if x == ord('2'):
                return "ext2"
           if x == ord('3'):
@@ -74,7 +73,7 @@ def choose_filesystem(partition):
                return "ext4"
 
 def boot_setup():
-     ''' TODO, get Filesystem for /boot if it is being used.'''
+     ''' Establish /boot partition location and filesystem'''
      global BOOT_DEV, FS_TYPE_BOOT
      x = 0 # x is our choice
      while x != ord('4'):
@@ -243,7 +242,7 @@ def do_mount(options, fstype, device, dest):
           cmd = ("mount -t %s %s" % device, dest)
      os.system(cmd)
 
-def do_Umount(options, fstype, device, dest):
+def do_umount(options, fstype, device, dest):
      if(options is not None):
           cmd = "mount -o %s -t %s %s %s" % \
                 (options, fstype, device, dest)
@@ -264,7 +263,6 @@ def check_device(device, bail):
           pass
      else:
           exit_cleanly(bail)
-
 
 def exit_cleanly(reason):
      curses.endwin()
